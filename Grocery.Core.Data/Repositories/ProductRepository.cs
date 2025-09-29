@@ -12,7 +12,9 @@ namespace Grocery.Core.Data.Repositories
                 new Product(1, "Melk", 300),
                 new Product(2, "Kaas", 100),
                 new Product(3, "Brood", 400),
-                new Product(4, "Cornflakes", 0)];
+                new Product(4, "Cornflakes", 0),
+                new Product(5, "Yoghurt", 250),
+                new Product(6, "Appels", 400)];
         }
         public List<Product> GetAll()
         {
