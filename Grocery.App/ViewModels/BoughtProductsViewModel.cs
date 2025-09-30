@@ -12,7 +12,7 @@ namespace Grocery.App.ViewModels
         private readonly IBoughtProductsService _boughtProductsService;
 
         [ObservableProperty]
-        Product selectedProduct;
+        Product? selectedProduct;
         public ObservableCollection<BoughtProducts> BoughtProductsList { get; set; } = [];
         public ObservableCollection<Product> Products { get; set; }
 
@@ -20,11 +20,24 @@ namespace Grocery.App.ViewModels
         {
             _boughtProductsService = boughtProductsService;
             Products = new(productService.GetAll());
+            // Initially load all bought products
+            LoadBoughtProducts(null);
         }
 
-        partial void OnSelectedProductChanged(Product? oldValue, Product newValue)
+        partial void OnSelectedProductChanged(Product? newValue)
         {
-            //Zorg dat de lijst BoughtProductsList met de gegevens die passen bij het geselecteerde product. 
+            // The newValue can be null if the picker selection is cleared.
+            LoadBoughtProducts(newValue?.Id);
+        }
+
+        private void LoadBoughtProducts(int? productId)
+        {
+            BoughtProductsList.Clear();
+            var productsToLoad = _boughtProductsService.Get(productId);
+            foreach (var item in productsToLoad)
+            {
+                BoughtProductsList.Add(item);
+            }
         }
 
         [RelayCommand]
