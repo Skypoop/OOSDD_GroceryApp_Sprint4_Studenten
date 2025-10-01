@@ -10,11 +10,15 @@ namespace Grocery.App.ViewModels
     {
         public ObservableCollection<GroceryList> GroceryLists { get; set; }
         private readonly IGroceryListService _groceryListService;
+        private readonly GlobalViewModel _global;
+        public GlobalViewModel Global => _global;
+        
 
-        public GroceryListViewModel(IGroceryListService groceryListService) 
+        public GroceryListViewModel(IGroceryListService groceryListService, GlobalViewModel global)
         {
             Title = "Boodschappenlijst";
             _groceryListService = groceryListService;
+            _global = global;
             GroceryLists = new(_groceryListService.GetAll());
         }
 
@@ -22,8 +26,22 @@ namespace Grocery.App.ViewModels
         public async Task SelectGroceryList(GroceryList groceryList)
         {
             Dictionary<string, object> paramater = new() { { nameof(GroceryList), groceryList } };
-            await Shell.Current.GoToAsync($"{nameof(Views.GroceryListItemsView)}?Titel={groceryList.Name}", true, paramater);
+            await Shell.Current.GoToAsync($"{nameof(Views.GroceryListItemsView)}?Titel={groceryList.Name}", true,
+                paramater);
         }
+
+        [RelayCommand]
+        public async Task ShowBoughtProducts()
+        {
+            // Check if the Client has the Admin role using Global
+            if (_global.Client?.Role == Role.Admin)
+            {
+                // Navigate to BoughtProductsView
+                await Shell.Current.GoToAsync($"{nameof(Views.BoughtProductsView)}", true);
+            }
+            // Do nothing if Client is not an Admin
+        }
+
         public override void OnAppearing()
         {
             base.OnAppearing();
