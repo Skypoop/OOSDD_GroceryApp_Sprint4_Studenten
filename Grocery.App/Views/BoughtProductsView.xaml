@@ -4,52 +4,91 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:Grocery.App.ViewModels"
              xmlns:m="clr-namespace:Grocery.Core.Models;assembly=Grocery.Core"
+             xmlns:converters="clr-namespace:Grocery.App.Converters"
              x:Class="Grocery.App.Views.BoughtProductsView"
              x:DataType="vm:BoughtProductsViewModel"
              Title="BoughtProductsView">
+
+    <ContentPage.Resources>
+        <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+    </ContentPage.Resources>
+
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="4*" />
+            <ColumnDefinition Width="15*" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="80" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Picker Grid.Column="0" Grid.Row="0" Margin="10,0,0,0" Title=""
-                ItemsSource="{Binding Products}"
-                ItemDisplayBinding="{Binding Name}"
-                SelectedItem="{Binding SelectedProduct, Mode=TwoWay}"
-                SelectedIndexChanged="Picker_SelectedIndexChanged"
-                BackgroundColor="{StaticResource Primary}"
-                TextColor="{StaticResource Secondary}">
-        </Picker>
+
+        <Grid Grid.Column="0" Grid.Row="0" Margin="10,0,0,0">
+            <Picker Title=""
+                    ItemsSource="{Binding Products}"
+                    ItemDisplayBinding="{Binding Name}"
+                    SelectedItem="{Binding SelectedProduct, Mode=TwoWay}"
+                    SelectedIndexChanged="Picker_SelectedIndexChanged"
+                    BackgroundColor="{StaticResource Primary}"
+                    TextColor="{StaticResource Secondary}">
+            </Picker>
+
+            <Label Text="Selecteer een product"
+                   VerticalOptions="Center"
+                   Margin="15,0,0,0"
+                   TextColor="LightGray"
+                   IsVisible="{Binding IsProductSelected, Converter={StaticResource InverseBoolConverter}}" />
+        </Grid>
+
+
         <Border Grid.Row="1" Grid.Column="0" Stroke="#C49B33" StrokeThickness="4" Padding="5" Margin="5"
                 HorizontalOptions="Center">
-            <CollectionView ItemsSource="{Binding BoughtProductsList}" Margin="5" HorizontalOptions="End"
-                            SelectionMode="Single">
-                <CollectionView.ItemsLayout>
-                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="10" />
-                </CollectionView.ItemsLayout>
-                <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="m:BoughtProducts">
-                        <Grid>
+            <Grid>
+                <CollectionView ItemsSource="{Binding BoughtProductsList}" Margin="5" HorizontalOptions="End"
+                                SelectionMode="Single" IsVisible="{Binding IsProductSelected}">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Vertical" ItemSpacing="10" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.Header>
+                        <Grid Padding="0,0,0,5">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <Label Text="{Binding Client.Name}" Grid.Column="0" />
-                            <Label Text="{Binding GroceryList.Name}" Grid.Column="1" />
+                            <Label Text="Klant" Grid.Column="0" FontAttributes="Bold" HorizontalOptions="Start"
+                                   Margin="10,0,0,0" />
+                            <Label Text="Boodschappenlijst" Grid.Column="1" FontAttributes="Bold"
+                                   HorizontalOptions="Start" Margin="10,0,0,0" />
                         </Grid>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-                <CollectionView.EmptyView>
-                    <ContentView>
-                        <Label Text="Er zijn geen verkochte producten" FontSize="18" FontAttributes="Bold"
-                               HorizontalTextAlignment="Center" />
-                    </ContentView>
-                </CollectionView.EmptyView>
-            </CollectionView>
+                    </CollectionView.Header>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="m:BoughtProducts">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Label Text="{Binding Client.Name}" Grid.Column="0" HorizontalOptions="Start"
+                                       Margin="10,0,0,0" />
+                                <Label Text="{Binding GroceryList.Name}" Grid.Column="1" HorizontalOptions="Start" />
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                    <CollectionView.EmptyView>
+                        <ContentView>
+                            <Label Text="Er zijn geen verkochte producten" FontSize="18" FontAttributes="Bold"
+                                   HorizontalTextAlignment="Center" />
+                        </ContentView>
+                    </CollectionView.EmptyView>
+                </CollectionView>
+
+                <Label Text="Selecteer eerst een product"
+                       FontSize="18"
+                       FontAttributes="Bold"
+                       HorizontalTextAlignment="Center"
+                       VerticalOptions="Center"
+                       IsVisible="{Binding IsProductSelected, Converter={StaticResource InverseBoolConverter}}" />
+            </Grid>
         </Border>
     </Grid>
 </ContentPage>

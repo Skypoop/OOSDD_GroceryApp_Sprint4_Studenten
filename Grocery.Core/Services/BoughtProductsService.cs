@@ -23,7 +23,13 @@ namespace Grocery.Core.Services
 
         public List<BoughtProducts> Get(int? productId)
         {
-            var boughtProducts = _groceryListRepository.GetAll()
+            var joinedData = GetJoinedData(productId);
+            return MapToBoughtProducts(joinedData);
+        }
+
+        private IEnumerable<(Client Client, GroceryList GroceryList, Product Product)> GetJoinedData(int? productId)
+        {
+            return _groceryListRepository.GetAll()
                 .Join(_clientRepository.GetAll(),
                     gl => gl.ClientId,
                     c => c.Id,
@@ -36,13 +42,15 @@ namespace Grocery.Core.Services
                 .Join(_productRepository.GetAll(),
                     temp => temp.GroceryListItem.ProductId,
                     p => p.Id,
-                    (temp, p) => new BoughtProducts(
-                        temp.Client,
-                        temp.GroceryList,
-                        p))
-                .ToList();
+                    (temp, p) => (temp.Client, temp.GroceryList, p));
+        }
 
-            return boughtProducts;
+        private List<BoughtProducts> MapToBoughtProducts(
+            IEnumerable<(Client Client, GroceryList GroceryList, Product Product)> joinedData)
+        {
+            return joinedData
+                .Select(item => new BoughtProducts(item.Client, item.GroceryList, item.Product))
+                .ToList();
         }
     }
 }
