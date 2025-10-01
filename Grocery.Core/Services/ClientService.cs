@@ -33,18 +33,5 @@ namespace Grocery.Core.Services
             List<Client> clients = _clientRepository.GetAll();
             return clients;
         }
-        public Client? GetCurrentClient()
-        {
-            return _currentClient;
-        }
-        public void SetCurrentClient(Client client)
-        {
-            _currentClient = client;
-        }
-
-        public void ClearCurrentClient()
-        {
-            _currentClient = null;
-        }
     }
 }

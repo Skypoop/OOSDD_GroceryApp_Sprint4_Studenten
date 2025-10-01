@@ -23,34 +23,23 @@ namespace Grocery.Core.Services
 
         public List<BoughtProducts> Get(int? productId)
         {
-            var joinedData = GetJoinedData(productId);
-            return MapToBoughtProducts(joinedData);
-        }
+            var boughtProducts = new List<BoughtProducts>();
+            var groceryListItems = _groceryListItemsRepository.GetAll();
+            groceryListItems = groceryListItems.Where(gli => gli.ProductId == productId).ToList();
 
-        private IEnumerable<(Client Client, GroceryList GroceryList, Product Product)> GetJoinedData(int? productId)
-        {
-            return _groceryListRepository.GetAll()
-                .Join(_clientRepository.GetAll(),
-                    gl => gl.ClientId,
-                    c => c.Id,
-                    (gl, c) => new { GroceryList = gl, Client = c })
-                .Join(_groceryListItemsRepository.GetAll(),
-                    temp => temp.GroceryList.Id,
-                    gli => gli.GroceryListId,
-                    (temp, gli) => new { temp.GroceryList, temp.Client, GroceryListItem = gli })
-                .Where(temp => productId == null || temp.GroceryListItem.ProductId == productId)
-                .Join(_productRepository.GetAll(),
-                    temp => temp.GroceryListItem.ProductId,
-                    p => p.Id,
-                    (temp, p) => (temp.Client, temp.GroceryList, p));
-        }
+            foreach (var gli in groceryListItems)
+            {
+                var groceryList = _groceryListRepository.Get(gli.GroceryListId);
+                if (groceryList == null) continue;
+                var client = _clientRepository.Get(groceryList.ClientId);
+                var product = _productRepository.Get(gli.ProductId);
+                if (client != null && product != null)
+                {
+                    boughtProducts.Add(new BoughtProducts(client, groceryList, product));
+                }
+            }
 
-        private List<BoughtProducts> MapToBoughtProducts(
-            IEnumerable<(Client Client, GroceryList GroceryList, Product Product)> joinedData)
-        {
-            return joinedData
-                .Select(item => new BoughtProducts(item.Client, item.GroceryList, item.Product))
-                .ToList();
+            return boughtProducts;
         }
     }
 }
