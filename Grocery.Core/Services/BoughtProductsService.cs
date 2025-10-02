@@ -38,7 +38,6 @@ namespace Grocery.Core.Services
                     boughtProducts.Add(new BoughtProducts(client, groceryList, product));
                 }
             }
-
             return boughtProducts;
         }
     }
