@@ -1,13 +1,9 @@
 ﻿using Grocery.Core.Models;
 
-namespace Grocery.Core.Interfaces.Services
+public interface IClientService
 {
-    public interface IClientService
-    {
-        public Client? Get(string email);
+    Client? Get(string email);
+    Client? Get(int id);
+    List<Client> GetAll();
 
-        public Client? Get(int id);
-
-        public List<Client> GetAll();
-    }
 }

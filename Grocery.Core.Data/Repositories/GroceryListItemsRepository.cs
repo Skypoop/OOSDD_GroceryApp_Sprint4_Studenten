@@ -38,8 +38,12 @@ namespace Grocery.Core.Data.Repositories
 
         public GroceryListItem? Delete(GroceryListItem item)
         {
-            groceryListItems.Remove(item);
-            return item;
+            GroceryListItem? listItem = groceryListItems.FirstOrDefault(i => i.Id == item.Id);
+            if (listItem != null)
+            {
+                groceryListItems.Remove(listItem);
+            }
+            return listItem;
         }
 
         public GroceryListItem? Get(int id)
